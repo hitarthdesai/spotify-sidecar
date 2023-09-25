@@ -5,7 +5,7 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import SpotifyProvider from "next-auth/providers/spotify";
 
 import { env } from "@/env.mjs";
 import { db } from "@/server/db";
@@ -38,30 +38,32 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.sub,
+        },
+      };
+    },
   },
-  adapter: PrismaAdapter(db),
+  session: {
+    strategy: "jwt",
+  },
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    SpotifyProvider({
+      clientId: env.SPOTIFY_CLIENT_ID,
+      clientSecret: env.SPOTIFY_CLIENT_SECRET,
+      client: {
+        scope: "user-read-email user-read-private",
+        redirect_uris: ["http://localhost:3000/api/auth/callback/spotify"],
+      },
+      profileUrl: "https://api.spotify.com/v1/me",
+      accessTokenUrl: "https://accounts.spotify.com/api/token",
     }),
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
   ],
+  // adapter: PrismaAdapter(db),
 };
 
 /**
