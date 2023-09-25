@@ -22,6 +22,7 @@ declare module "next-auth" {
       id: string;
       // ...other properties
       // role: UserRole;
+      accessToken: string;
     };
   }
 
@@ -38,13 +39,30 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: async ({ session, token }) => {
+    session: ({ session, token }) => {
       return {
         ...session,
         user: {
           ...session.user,
           id: token.sub,
+          accessToken: token.accessToken,
         },
+      };
+    },
+
+    jwt: ({ token, account }) => {
+      if (account) {
+        return {
+          ...token,
+          accessToken: account.access_token,
+          refreshToken: account.refresh_token,
+        };
+      }
+
+      return {
+        ...token,
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
       };
     },
   },
@@ -59,8 +77,20 @@ export const authOptions: NextAuthOptions = {
         scope: "user-read-email user-read-private",
         redirect_uris: ["http://localhost:3000/api/auth/callback/spotify"],
       },
-      profileUrl: "https://api.spotify.com/v1/me",
-      accessTokenUrl: "https://accounts.spotify.com/api/token",
+      profile: (profile, token) => {
+        console.log("profile > token.access_token", token.access_token);
+        let id;
+        try {
+          id = profile.id;
+        } catch (e) {
+          id = new Date().getTime().toString();
+        }
+        return {
+          id,
+          accessToken: token.access_token,
+          refreshToken: token.refresh_token,
+        };
+      },
     }),
   ],
   // adapter: PrismaAdapter(db),
