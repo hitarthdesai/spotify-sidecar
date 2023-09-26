@@ -1,14 +1,12 @@
+import Link from "next/link";
 import React from "react";
 
 interface PlaylistProps {
-  description: string;
-  href: string;
   id: string;
   images: { url: string }[];
   name: string;
   public: boolean;
-  tracks: { href: string; total: number };
-  uri: string;
+  tracks: { total: number };
 }
 
 const Playlist: React.FC<PlaylistProps> = ({
@@ -16,9 +14,13 @@ const Playlist: React.FC<PlaylistProps> = ({
   name,
   public: isPublic,
   tracks,
+  id,
 }) => {
   return (
-    <div className="max-w-xs overflow-hidden rounded shadow-lg">
+    <Link
+      href={`playlist/${id}`}
+      className="max-w-xs overflow-hidden rounded shadow-lg"
+    >
       <img className="w-full" src={images[0]?.url} alt={name} />
       <div className="px-6 py-4">
         <div className="mb-2 text-xl font-bold">{name}</div>
@@ -31,7 +33,7 @@ const Playlist: React.FC<PlaylistProps> = ({
           {tracks.total} Tracks
         </span>
       </div>
-    </div>
+    </Link>
   );
 };
 

@@ -1,7 +1,8 @@
 import * as z from "zod";
 
-export const playlistSchema = z.object({
+export const miniPlaylistSchema = z.object({
   id: z.string(),
+  name: z.string(),
   description: z.string(),
   images: z.array(
     z.object({
@@ -10,21 +11,32 @@ export const playlistSchema = z.object({
       width: z.number().nullable(),
     }),
   ),
-  name: z.string(),
   public: z.boolean(),
   tracks: z.object({
-    href: z.string().url(),
     total: z.number(),
   }),
-  /* https://api.spotify.com/v1/playlists/5MiIwFlD5FH1VpUpy2SCLY/${id} */
-  href: z.string().url(),
-  /* spotify:playlist:${id} */
-  uri: z.string(),
 });
 
-export type Playlist = z.infer<typeof playlistSchema>;
+export const detailedPlaylistSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  tracks: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      artists: z.array(z.string()).nonempty(),
+    }),
+  ),
+});
+
+export type MiniPlaylist = z.infer<typeof miniPlaylistSchema>;
 
 export const listAllInputSchema = z.undefined();
 export const listAllOutputSchema = z.object({
-  playlists: z.array(playlistSchema).nonempty(),
+  playlists: z.array(miniPlaylistSchema).nonempty(),
+});
+
+export const listByIdInputSchema = z.object({ id: z.string().min(1) });
+export const listByIdOutputSchema = z.object({
+  playlist: miniPlaylistSchema,
 });

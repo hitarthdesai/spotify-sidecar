@@ -18,7 +18,7 @@ export default function Header() {
             <>
               <li>
                 <Link
-                  href="/playlists"
+                  href="/playlist"
                   className="text-gray-800 hover:text-gray-600"
                 >
                   Playlists
