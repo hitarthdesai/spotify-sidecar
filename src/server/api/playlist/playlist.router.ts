@@ -32,18 +32,16 @@ export const playlistRouter = createTRPCRouter({
 
   byId: protectedProcedure
     .input(listByIdInputSchema)
-    // .output(listByIdOutputSchema)
+    .output(listByIdOutputSchema)
     .query(async ({ ctx, input: { id: playlistId } }) => {
-      const userId = ctx.session.user.id;
-
-      console.log("playlistId", playlistId);
+      const accessToken = ctx.session.user.accessToken;
 
       try {
         const { id, name, description, tracks } = await fetch(
           `https://api.spotify.com/v1/playlists/${playlistId}?fields=name%2Cdescription%2Cid%2Ctracks.items%28track%28id%2Cartists%28id%29%2Cname%2Cimages%29%29`,
           {
             headers: {
-              Authorization: `Bearer ${ctx.session.user.accessToken}`,
+              Authorization: `Bearer ${accessToken}`,
             },
           },
         ).then((res) => res.json());

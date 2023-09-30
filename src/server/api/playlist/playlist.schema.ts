@@ -30,6 +30,7 @@ export const detailedPlaylistSchema = z.object({
 });
 
 export type MiniPlaylist = z.infer<typeof miniPlaylistSchema>;
+export type DetailedPlaylist = z.infer<typeof miniPlaylistSchema>;
 
 export const listAllInputSchema = z.undefined();
 export const listAllOutputSchema = z.object({
@@ -38,5 +39,5 @@ export const listAllOutputSchema = z.object({
 
 export const listByIdInputSchema = z.object({ id: z.string().min(1) });
 export const listByIdOutputSchema = z.object({
-  playlist: miniPlaylistSchema,
+  playlist: detailedPlaylistSchema,
 });

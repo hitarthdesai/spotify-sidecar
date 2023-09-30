@@ -18,6 +18,14 @@ export default function Header() {
             <>
               <li>
                 <Link
+                  href="/dashboard"
+                  className="text-gray-800 hover:text-gray-600"
+                >
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/playlist"
                   className="text-gray-800 hover:text-gray-600"
                 >

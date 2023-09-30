@@ -14,9 +14,6 @@ const PlaylistPage = () => {
     id: playlistId ?? "4gfUPrIXM7VHIyIjmggWyr",
   });
 
-  console.log(data?.playlist);
-  console.log(error);
-
   if (!data?.playlist) {
     return null;
   }
