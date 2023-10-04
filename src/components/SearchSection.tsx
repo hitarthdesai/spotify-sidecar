@@ -1,6 +1,11 @@
+import { api } from "@/utils/api";
 import { useCombobox } from "downshift";
 
 export const SearchSection = () => {
+  const { data, error } = api.track.search.useQuery({ query: "BRUH" });
+  console.log(data?.tracks);
+  console.log(error);
+
   const items = ["Track 1", "Track 2", "Track 3", "Track 4"];
   const {
     isOpen,
