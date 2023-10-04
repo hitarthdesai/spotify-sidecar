@@ -1,12 +1,18 @@
 import { api } from "@/utils/api";
 import { useCombobox } from "downshift";
+import { useDebounce } from "use-debounce";
+import { useState } from "react";
 
 export const SearchSection = () => {
-  const { data, error } = api.track.search.useQuery({ query: "BRUH" });
-  console.log(data?.tracks);
-  console.log(error);
+  const [query, setQuery] = useState("");
+  const [debouncedQuery] = useDebounce(query, 400);
 
-  const items = ["Track 1", "Track 2", "Track 3", "Track 4"];
+  const { data } = api.track.search.useQuery(
+    { query: debouncedQuery },
+    { enabled: !!query },
+  );
+
+  const items = data?.tracks ?? [];
   const {
     isOpen,
     getMenuProps,
@@ -15,6 +21,7 @@ export const SearchSection = () => {
     getItemProps,
   } = useCombobox({
     items,
+    onInputValueChange: ({ inputValue }) => setQuery(inputValue ?? ""),
   });
 
   return (
@@ -35,13 +42,20 @@ export const SearchSection = () => {
           {isOpen &&
             items.map((item, index) => (
               <li
-                key={item}
+                key={item.id}
                 {...getItemProps({ item, index })}
                 className={`${
                   highlightedIndex === index ? "bg-gray-200" : ""
-                } cursor-pointer p-2`}
+                } cursor-pointer p-2 hover:bg-gray-100`}
               >
-                {item}
+                <div className="flex items-center">
+                  <div>
+                    <p className="text-sm font-medium">{item.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {item.artists.join(", ")}
+                    </p>
+                  </div>
+                </div>
               </li>
             ))}
         </ul>
